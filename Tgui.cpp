@@ -16,12 +16,21 @@ void signalHandler(tgui::EditBox::Ptr editbox){
 void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow){
 	sf::RenderWindow window2(sf::VideoMode(w_width, w_width), "Statwindow");
 	tgui::Gui gui2{window2};
-	int str = std::stoi(Strshow->getText());
-	int dex = std::stoi(Dexshow->getText());
-//	std::string Damage = (str*2 + dex*0.2);
-//	int Health = Str*0.5 + con*4;
-//	int Dodge = 0.1*Dex;
-//	int Mana = intellect*10+100;
+	std::string mstr = Strshow->getText();
+	std::string mdex = Dexshow->getText();
+	std::string mcon = Conshow->getText();
+	std::string mint = Intshow->getText();
+	int str = std::stoi(mstr);
+	int dex = std::stoi(mdex);
+	int con = std::stoi(mcon);
+	int inte = std::stoi(mint);
+	int Damage = (str*2 + dex*0.2);
+	int Health = str*0.5 + con*4;
+	int Dodge = 0.1*dex;
+	int Mana = inte*10+100;
+
+//Sätt in visuella Str,Dex, con, inte, dmg, health, dodge, mana
+
 //loop stats
 	while (window2.isOpen())
 	{
