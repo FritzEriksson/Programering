@@ -12,7 +12,31 @@ void signalHandler(tgui::EditBox::Ptr editbox){
 	auto number = (rand() % 15) + 1;
 	editbox->setText(std::to_string(number));
 }
-
+//Statwindow
+void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow){
+	sf::RenderWindow window2(sf::VideoMode(w_width, w_width), "Statwindow");
+	tgui::Gui gui2{window2};
+	int str = std::stoi(Strshow->getText());
+	int dex = std::stoi(Dexshow->getText());
+//	std::string Damage = (str*2 + dex*0.2);
+//	int Health = Str*0.5 + con*4;
+//	int Dodge = 0.1*Dex;
+//	int Mana = intellect*10+100;
+//loop stats
+	while (window2.isOpen())
+	{
+		sf::Event event2;
+		while (window2.pollEvent(event2))
+		{
+		if (event2.type == sf::Event::Closed)
+			window2.close();		
+		gui2.handleEvent(event2);
+		}
+	window2.clear();
+	window2.display();	
+	}		
+}
+//main
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(w_width, w_height), "DND CharCreationTM");
@@ -110,7 +134,19 @@ int main()
 	Randknapp->connect("pressed", signalHandler, std::ref(Dexshow));
 	Randknapp->connect("pressed", signalHandler, std::ref(Conshow));
 	Randknapp->connect("pressed", signalHandler, std::ref(Intshow));
-
+	tgui::Button::Ptr Statknapp = tgui::Button::create();
+		gui.add(Statknapp);
+		Statknapp->setPosition(500, 510);
+		Statknapp->setSize(50, 50);
+		sf::Text Stat;
+			Stat.setFont(font);
+			Stat.setString("Generate stats");
+			Stat.setCharacterSize(20);
+			Stat.setFillColor(sf::Color(255, 255, 255));
+			Stat.setPosition(sf::Vector2f(470.f, 490.f));
+			Stat.setStyle(sf::Text::Bold);
+	Statknapp->connect("pressed", statwindow, std::ref(Strshow), std::ref(Dexshow), std::ref(Conshow), std::ref(Intshow));
+ 
 //EditBoxar med utskrift
 	tgui::EditBox::Ptr NameBox = tgui::EditBox::create();
 		gui.add(NameBox);
@@ -162,6 +198,7 @@ int main()
 	Box.setFillColor(sf::Color(33, 33, 33));
 	Box.setPosition(sf::Vector2f(200.f, 200.f));
 	Box.setSize(sf::Vector2f(250.f, 350.f));
+
 // Loop
 	while (window.isOpen())
 	{
@@ -190,6 +227,7 @@ int main()
 	window.draw(Int);	
 	window.draw(Box);
 	window.draw(Rand);
+	window.draw(Stat);
 	window.display();
 	}
 }
