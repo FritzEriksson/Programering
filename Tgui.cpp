@@ -1,21 +1,63 @@
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <TGUI/TGUI.hpp>
+#include <stdlib.h>
+#include <time.h>
 
 const int w_width = 600;
 const int w_height= 700;
 
 //Randomizer för Knappar
-void signalHandler(tgui::EditBox::Ptr editbox){
+void signalHandler(tgui::EditBox::Ptr editbox){	
 	auto number = (rand() % 15) + 1;
 	editbox->setText(std::to_string(number));
 }
+//Spara Gubben
+void sparning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow, tgui::EditBox::Ptr TitelBox, tgui::EditBox::Ptr NameBox){
+	std::string Name = NameBox->getText();
+	std::string Titel = TitelBox->getText();	
+	std::string Str = Strshow->getText();
+	std::string Dex = Dexshow->getText();
+	std::string Con = Conshow->getText();
+	std::string Int = Intshow->getText();
+	std::ofstream Spar ("Spar1.txt");
+	if (Spar.is_open()){
+		Spar << Name << std::endl << Titel << std::endl << Str << std::endl << Dex << std::endl << Con << std::endl << Int << std::endl;
+		Spar.close();
+	}
+}
+//Ladda den sparade gubben
+void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow, tgui::EditBox::Ptr TitelBox, tgui::EditBox::Ptr NameBox){
+
+	int a = 0;
+	std::string Gubbe[6];
+	std::ifstream Ladd ("Spar1.txt");
+	if (Ladd.is_open()){
+		for(int a=0; a<6; a++){
+			getline(Ladd, Gubbe[a]);
+		}
+	Ladd.close();
+	}
+	NameBox->setText(Gubbe[0]);
+	TitelBox->setText(Gubbe[1]);
+	Strshow->setText(Gubbe[2]);
+	Dexshow->setText(Gubbe[3]);
+	Conshow->setText(Gubbe[4]);
+	Intshow->setText(Gubbe[5]);
+
+}
 //Statwindow
 void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow){
-	sf::RenderWindow window2(sf::VideoMode(w_width, w_width), "Statwindow");
+	sf::RenderWindow window2(sf::VideoMode(350, 500), "Statwindow");
 	tgui::Gui gui2{window2};
+	sf::Font font;
+	if (!font.loadFromFile("PiratesBay.ttf")){
+		std::cout << "font not found" << std::endl;
+	}
+//Matte och omvandling	
 	std::string mstr = Strshow->getText();
 	std::string mdex = Dexshow->getText();
 	std::string mcon = Conshow->getText();
@@ -25,23 +67,84 @@ void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Ed
 	int con = std::stoi(mcon);
 	int inte = std::stoi(mint);
 	int Damage = (str*2 + dex*0.2);
-	int Health = str*0.5 + con*4;
+	int Health = str*2 + con*4;
 	int Dodge = 0.1*dex;
 	int Mana = inte*10+100;
-
-//Sätt in visuella Str,Dex, con, inte, dmg, health, dodge, mana
-
+	int Speech = inte*3-Damage;
+	if (Speech < 0){
+		Speech = 0;
+	}
+	int Charisma = Speech + Health -str;
+	if (Charisma < 0){
+		Charisma = 0;
+	}
+	int Luck = Charisma + Dodge + dex;
+	int Agillity = dex*3 + str*0.3;
+//Editboxar secondary stats
+	tgui::EditBox::Ptr Dmgview = tgui::EditBox::create();
+		gui2.add(Dmgview);
+		Dmgview->setPosition(110, 200);
+		Dmgview->setSize(50, 25);
+		Dmgview->setTextSize(20);
+		Dmgview->setText(std::to_string(Damage));
+		Dmgview->setReadOnly();
+	tgui::EditBox::Ptr HPview = tgui::EditBox::copy(Dmgview);
+		gui2.add(HPview);
+		HPview->setPosition(110, 100);
+		HPview->setText(std::to_string(Health));
+	tgui::EditBox::Ptr Manaview = tgui::EditBox::copy(Dmgview);
+		gui2.add(Manaview);
+		Manaview->setPosition(110, 150);
+		Manaview->setText(std::to_string(Mana));
+	tgui::EditBox::Ptr Agiview = tgui::EditBox::copy(Dmgview);
+		gui2.add(Agiview);
+		Agiview->setPosition(110, 250);
+		Agiview->setText(std::to_string(Agillity));
+	tgui::EditBox::Ptr Dodview = tgui::EditBox::copy(Dmgview);
+		gui2.add(Dodview);
+		Dodview->setPosition(110, 300);
+		Dodview->setText(std::to_string(Dodge));
+	tgui::EditBox::Ptr Speechview = tgui::EditBox::copy(Dmgview);
+		gui2.add(Speechview);
+		Speechview->setPosition(110, 350);
+		Speechview->setText(std::to_string(Speech));
+	tgui::EditBox::Ptr Chaview = tgui::EditBox::copy(Dmgview);
+		gui2.add(Chaview);
+		Chaview->setPosition(110, 400);
+		Chaview->setText(std::to_string(Charisma));
+	tgui::EditBox::Ptr Luckview = tgui::EditBox::copy(Dmgview);
+		gui2.add(Luckview);
+		Luckview->setPosition(110, 450);
+		Luckview->setText(std::to_string(Luck));
+//Text
+	sf::Text text;
+		text.setFont(font);
+		text.setString("HP\n\nMana\n\nDamage\n\nAgillity\n\nDodge\n\nSpeech\n\nCharisma\n\nLuck");
+		text.setCharacterSize(22);
+		text.setFillColor(sf::Color(255, 255, 255));
+		text.setPosition(sf::Vector2f(7.f, 100.f));
+		text.setStyle(sf::Text::Bold);
+	sf::Text title;
+		title.setFont(font);
+		title.setString("Secondary stats");
+		title.setCharacterSize(45);
+		title.setFillColor(sf::Color(255, 255, 255));
+		title.setPosition(sf::Vector2f(7.f, 7.f));
+		title.setStyle(sf::Text::Bold);
 //loop stats
 	while (window2.isOpen())
 	{
 		sf::Event event2;
 		while (window2.pollEvent(event2))
 		{
-		if (event2.type == sf::Event::Closed)
-			window2.close();		
-		gui2.handleEvent(event2);
+			if (event2.type == sf::Event::Closed)
+				window2.close();		
+			gui2.handleEvent(event2);
 		}
 	window2.clear();
+	gui2.draw();
+	window2.draw(title);
+	window2.draw(text);
 	window2.display();	
 	}		
 }
@@ -50,12 +153,18 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(w_width, w_height), "DND CharCreationTM");
 	tgui::Gui gui{window};
-
+	srand (time(NULL));
+//Laddning av font och texturer
 	sf::Font font;
 	if (!font.loadFromFile("PiratesBay.ttf")){
 		std::cout << "font not found" << std::endl;
 	}
-// Knappar och dess GUI 
+	sf::Texture texture;
+	if (!texture.loadFromFile("Gubbe.jpg"))
+	{
+	    std::cout << "texture not found" << std::endl;
+	}
+// Knappar, Editboxar, text och annan GUI (Förstaskärm) 
 	tgui::Button::Ptr Strknapp = tgui::Button::create();
 		gui.add(Strknapp);
 		Strknapp->setPosition(50, 250);
@@ -66,75 +175,104 @@ int main()
 			Strshow->setSize(50, 50);
 			Strshow->setTextSize(25);
 			Strshow->setReadOnly();
-			sf::Text Str;
-				Str.setFont(font);
-				Str.setString("Str");
-				Str.setCharacterSize(25);
-				Str.setFillColor(sf::Color(255, 255, 255));
-				Str.setPosition(sf::Vector2f(5.f, 250.f));
-				Str.setStyle(sf::Text::Bold);
-	tgui::Button::Ptr Dexknapp = tgui::Button::create();
+	tgui::Button::Ptr Dexknapp = tgui::Button::copy(Strknapp);
 		gui.add(Dexknapp);
 		Dexknapp->setPosition(50, 300);
-		Dexknapp->setSize(50, 50);
-			tgui::EditBox::Ptr Dexshow = tgui::EditBox::create();
+			tgui::EditBox::Ptr Dexshow = tgui::EditBox::copy(Strshow);
 			gui.add(Dexshow);
 			Dexshow->setPosition(110, 300);
-			Dexshow->setSize(50, 50);
-			Dexshow->setTextSize(25);
-			Dexshow->setReadOnly();
-			sf::Text Dex;
-				Dex.setFont(font);
-				Dex.setString("Dex");
-				Dex.setCharacterSize(25);
-				Dex.setFillColor(sf::Color(255, 255, 255));
-				Dex.setPosition(sf::Vector2f(5.f, 300.f));
-				Dex.setStyle(sf::Text::Bold);
-	tgui::Button::Ptr Conknapp = tgui::Button::create();
+	tgui::Button::Ptr Conknapp = tgui::Button::copy(Strknapp);
 		gui.add(Conknapp);
 		Conknapp->setPosition(50, 400);
-		Conknapp->setSize(50, 50);
-			tgui::EditBox::Ptr Conshow = tgui::EditBox::create();
+			tgui::EditBox::Ptr Conshow = tgui::EditBox::copy(Strshow);
 			gui.add(Conshow);
 			Conshow->setPosition(110, 400);
-			Conshow->setSize(50, 50);
-			Conshow->setTextSize(25);
-			Conshow->setReadOnly();
-			sf::Text Con;
-				Con.setFont(font);
-				Con.setString("Con");
-				Con.setCharacterSize(25);
-				Con.setFillColor(sf::Color(255, 255, 255));
-				Con.setPosition(sf::Vector2f(5.f, 400.f));
-				Con.setStyle(sf::Text::Bold);
-	tgui::Button::Ptr Intknapp = tgui::Button::create();
+	tgui::Button::Ptr Intknapp = tgui::Button::copy(Strknapp);
 		gui.add(Intknapp);
 		Intknapp->setPosition(50, 450);
-		Intknapp->setSize(50, 50);
-			tgui::EditBox::Ptr Intshow = tgui::EditBox::create();
+			tgui::EditBox::Ptr Intshow = tgui::EditBox::copy(Strshow);
 			gui.add(Intshow);
 			Intshow->setPosition(110, 450);
-			Intshow->setSize(50, 50);
-			Intshow->setTextSize(25);
-			Intshow->setReadOnly();
-			sf::Text Int;
-				Int.setFont(font);
-				Int.setString("Int");
-				Int.setCharacterSize(25);
-				Int.setFillColor(sf::Color(255, 255, 255));
-				Int.setPosition(sf::Vector2f(5.f, 450.f));
-				Int.setStyle(sf::Text::Bold);
-	tgui::Button::Ptr Randknapp = tgui::Button::create();
+	tgui::Button::Ptr Randknapp = tgui::Button::copy(Strknapp);
 		gui.add(Randknapp);
 		Randknapp->setPosition(80, 510);
-		Randknapp->setSize(50, 50);
-		sf::Text Rand;
-			Rand.setFont(font);
-			Rand.setString("Rand");
-			Rand.setCharacterSize(25);
-			Rand.setFillColor(sf::Color(255, 255, 255));
-			Rand.setPosition(sf::Vector2f(18.f, 510.f));
-			Rand.setStyle(sf::Text::Bold);
+	tgui::Button::Ptr Statknapp = tgui::Button::copy(Strknapp);
+		gui.add(Statknapp);
+		Statknapp->setPosition(500, 510);
+	tgui::Button::Ptr Sparknapp = tgui::Button::copy(Strknapp);
+		gui.add(Sparknapp);
+		Sparknapp->setPosition(500, 230);
+	tgui::Button::Ptr Laddknapp = tgui::Button::copy(Strknapp);
+		gui.add(Laddknapp);
+		Laddknapp->setPosition(500, 320);
+	tgui::EditBox::Ptr NameBox = tgui::EditBox::create();
+		gui.add(NameBox);
+		NameBox->setPosition(170, 600);
+		NameBox->setSize(300, 50);
+		NameBox->setTextSize(40);
+	tgui::EditBox::Ptr TitelBox = tgui::EditBox::create();
+		gui.add(TitelBox);
+		TitelBox->setPosition(100, 655);
+		TitelBox->setSize(400, 25);
+		TitelBox->setTextSize(20);
+//sf::Text
+	sf::Text titel;
+		titel.setFont(font);
+		titel.setString("DND CharCreationTM");
+		titel.setCharacterSize(50);
+		titel.setFillColor(sf::Color(255, 255, 255));
+		titel.setPosition(sf::Vector2f(50.f, 10.f));
+		titel.setStyle(sf::Text::Bold | sf::Text::Underlined);
+	sf::Text SpLaGe;
+		SpLaGe.setFont(font);
+		SpLaGe.setString("Save Character\n\n\n\nLoad Character\n\n\n\n\n\n\n\nGenerate stats");
+		SpLaGe.setCharacterSize(20);
+		SpLaGe.setFillColor(sf::Color(255, 255, 255));
+		SpLaGe.setPosition(sf::Vector2f(465.f, 200.f));
+		SpLaGe.setStyle(sf::Text::Bold);
+	sf::Text Stat;
+		Stat.setFont(font);
+		Stat.setString("Str\n\nDex\n\n\nCon\n\nInt");
+		Stat.setCharacterSize(25);
+		Stat.setFillColor(sf::Color(255, 255, 255));
+		Stat.setPosition(sf::Vector2f(5.f, 250.f));
+		Stat.setStyle(sf::Text::Bold);
+	sf::Text Titeldone;
+		Titeldone.setFont(font);
+		Titeldone.setString("");
+		Titeldone.setCharacterSize(25);
+		Titeldone.setFillColor(sf::Color(255, 255, 255));
+		Titeldone.setPosition(sf::Vector2f(110.f, 130.f));
+		Titeldone.setStyle(sf::Text::Bold);
+	sf::Text Namedone;
+		Namedone.setFont(font);
+		Namedone.setString("");
+		Namedone.setCharacterSize(50);
+		Namedone.setFillColor(sf::Color(255, 255, 255));
+		Namedone.setPosition(sf::Vector2f(110.f, 80.f));
+		Namedone.setStyle(sf::Text::Bold);
+	sf::Text Titleplate;
+		Titleplate.setFont(font);
+		Titleplate.setString("Title");
+		Titleplate.setCharacterSize(25);
+		Titleplate.setFillColor(sf::Color(255, 255, 255));
+		Titleplate.setPosition(sf::Vector2f(25.f, 650.f));
+		Titleplate.setStyle(sf::Text::Bold);
+	sf::Text Nameplate;
+		Nameplate.setFont(font);
+		Nameplate.setString("Name");
+		Nameplate.setCharacterSize(50);
+		Nameplate.setFillColor(sf::Color(255, 255, 255));
+		Nameplate.setPosition(sf::Vector2f(25.f, 595.f));
+		Nameplate.setStyle(sf::Text::Bold);
+	sf::Text Rand;
+		Rand.setFont(font);
+		Rand.setString("Rand");
+		Rand.setCharacterSize(25);
+		Rand.setFillColor(sf::Color(255, 255, 255));
+		Rand.setPosition(sf::Vector2f(18.f, 510.f));
+		Rand.setStyle(sf::Text::Bold);
+//Signaler
 	Strknapp->connect("pressed", signalHandler, std::ref(Strshow));
 	Dexknapp->connect("pressed", signalHandler, std::ref(Dexshow));
 	Conknapp->connect("pressed", signalHandler, std::ref(Conshow));
@@ -143,72 +281,15 @@ int main()
 	Randknapp->connect("pressed", signalHandler, std::ref(Dexshow));
 	Randknapp->connect("pressed", signalHandler, std::ref(Conshow));
 	Randknapp->connect("pressed", signalHandler, std::ref(Intshow));
-	tgui::Button::Ptr Statknapp = tgui::Button::create();
-		gui.add(Statknapp);
-		Statknapp->setPosition(500, 510);
-		Statknapp->setSize(50, 50);
-		sf::Text Stat;
-			Stat.setFont(font);
-			Stat.setString("Generate stats");
-			Stat.setCharacterSize(20);
-			Stat.setFillColor(sf::Color(255, 255, 255));
-			Stat.setPosition(sf::Vector2f(470.f, 490.f));
-			Stat.setStyle(sf::Text::Bold);
 	Statknapp->connect("pressed", statwindow, std::ref(Strshow), std::ref(Dexshow), std::ref(Conshow), std::ref(Intshow));
- 
-//EditBoxar med utskrift
-	tgui::EditBox::Ptr NameBox = tgui::EditBox::create();
-		gui.add(NameBox);
-		NameBox->setPosition(150, 600);
-		NameBox->setSize(300, 50);
-		NameBox->setTextSize(40);
-		sf::Text Nameplate;
-			Nameplate.setFont(font);
-			Nameplate.setString("Name");
-			Nameplate.setCharacterSize(50);
-			Nameplate.setFillColor(sf::Color(255, 255, 255));
-			Nameplate.setPosition(sf::Vector2f(25.f, 595.f));
-			Nameplate.setStyle(sf::Text::Bold);
-			sf::Text Namedone;
-				Namedone.setFont(font);
-				Namedone.setString("");
-				Namedone.setCharacterSize(50);
-				Namedone.setFillColor(sf::Color(255, 255, 255));
-				Namedone.setPosition(sf::Vector2f(110.f, 80.f));
-				Namedone.setStyle(sf::Text::Bold);
-	tgui::EditBox::Ptr TitelBox = tgui::EditBox::create();
-		gui.add(TitelBox);
-		TitelBox->setPosition(100, 655);
-		TitelBox->setSize(400, 25);
-		TitelBox->setTextSize(20);
-		sf::Text Titleplate;
-			Titleplate.setFont(font);
-			Titleplate.setString("Title");
-			Titleplate.setCharacterSize(25);
-			Titleplate.setFillColor(sf::Color(255, 255, 255));
-			Titleplate.setPosition(sf::Vector2f(25.f, 650.f));
-			Titleplate.setStyle(sf::Text::Bold);
-			sf::Text Titeldone;
-				Titeldone.setFont(font);
-				Titeldone.setString("");
-				Titeldone.setCharacterSize(25);
-				Titeldone.setFillColor(sf::Color(255, 255, 255));
-				Titeldone.setPosition(sf::Vector2f(110.f, 130.f));
-				Titeldone.setStyle(sf::Text::Bold);
-	sf::Text titel;
-	titel.setFont(font);
-	titel.setString("DND CharCreationTM");
-	titel.setCharacterSize(50);
-	titel.setFillColor(sf::Color(255, 255, 255));
-	titel.setPosition(sf::Vector2f(50.f, 10.f));
-	titel.setStyle(sf::Text::Bold);
-
-	sf::RectangleShape Box(sf::Vector2f(120.f, 50.f));
-	Box.setFillColor(sf::Color(33, 33, 33));
-	Box.setPosition(sf::Vector2f(200.f, 200.f));
-	Box.setSize(sf::Vector2f(250.f, 350.f));
-
-// Loop
+	Sparknapp->connect("pressed", sparning, std::ref(Strshow), std::ref(Dexshow), std::ref(Conshow), std::ref(Intshow), std::ref(NameBox), std::ref(TitelBox));
+	Laddknapp->connect("pressed", laddning, std::ref(Strshow), std::ref(Dexshow), std::ref(Conshow), std::ref(Intshow), std::ref(NameBox), std::ref(TitelBox));
+//Sprite
+	sf::Sprite Gubbe;
+		Gubbe.setTexture(texture);
+		Gubbe.setPosition(sf::Vector2f(170.f, 200.f)); 
+		Gubbe.setScale(sf::Vector2f(0.5f, 0.5f)); 
+// Loop Main
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -222,21 +303,17 @@ int main()
 				window.close();		
 			gui.handleEvent(event);
 		}
-//Utritningar
 	window.clear();
 	gui.draw();
 	window.draw(titel);
-	window.draw(Nameplate);
+	window.draw(SpLaGe);
+	window.draw(Stat);
+	window.draw(Titeldone);
 	window.draw(Namedone);
 	window.draw(Titleplate);
-	window.draw(Titeldone);
-	window.draw(Str);
-	window.draw(Dex);
-	window.draw(Con);
-	window.draw(Int);	
-	window.draw(Box);
+	window.draw(Nameplate);
 	window.draw(Rand);
-	window.draw(Stat);
+	window.draw(Gubbe);
 	window.display();
 	}
 }
