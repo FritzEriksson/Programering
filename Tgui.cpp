@@ -27,7 +27,7 @@ void sparning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 	std::string Int = Intshow->getText();
 	std::fstream Spar ("Spar1.txt", std::ios::in | std::ios::app);
 	if (Spar.is_open()){
-		Spar << "{" << std::endl << Name << std::endl << Titel << std::endl << Str << std::endl << Dex << std::endl << Con << std::endl << Int << std::endl;
+		Spar << "{" << std::endl << Titel << std::endl << Name << std::endl << Str << std::endl << Dex << std::endl << Con << std::endl << Int << std::endl;
 		Spar.close();
 	}
 }
@@ -43,7 +43,7 @@ void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 		Load->setSize(100, 50);
 		Load->setTextSize(25);
 	int a = 0;
-	std::string Gubbe[6];
+	std::string Gubbe[5];
 	std::ifstream Ladd ("Spar1.txt");
 	std::string x;
 	std::string line;
@@ -61,17 +61,17 @@ void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 					if (line == "{"){
 						getline(Ladd, test);
 						if (test == x){
-							for(int a=0; a<6; a++){
+							for(int a=0; a<5; a++){
 								getline(Ladd, Gubbe[a]);
 							}
 						}
 					}					
-					NameBox->setText(Gubbe[0]);
-					TitelBox->setText(Gubbe[1]);
-					Strshow->setText(Gubbe[2]);
-					Dexshow->setText(Gubbe[3]);
-					Conshow->setText(Gubbe[4]);
-					Intshow->setText(Gubbe[5]);
+					NameBox->setText(x);
+					TitelBox->setText(Gubbe[0]);
+					Strshow->setText(Gubbe[1]);
+					Dexshow->setText(Gubbe[2]);
+					Conshow->setText(Gubbe[3]);
+					Intshow->setText(Gubbe[4]);
 				}
 				Ladd.close();
 			if (event3.type == sf::Event::Closed)
