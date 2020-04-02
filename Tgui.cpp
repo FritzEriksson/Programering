@@ -11,11 +11,13 @@ const int w_width = 600;
 const int w_height= 700;
 
 //Randomizer för Knappar
+//---------------------------------------------------------------------------------------------------------------------------
 void signalHandler(tgui::EditBox::Ptr editbox){	
 	auto number = (rand() % 15) + 1;
 	editbox->setText(std::to_string(number));
 }
 //Spara Gubben
+//---------------------------------------------------------------------------------------------------------------------------
 void sparning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow, tgui::EditBox::Ptr TitelBox, tgui::EditBox::Ptr NameBox){
 	std::string Name = NameBox->getText();
 	std::string Titel = TitelBox->getText();	
@@ -23,33 +25,88 @@ void sparning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 	std::string Dex = Dexshow->getText();
 	std::string Con = Conshow->getText();
 	std::string Int = Intshow->getText();
-	std::ofstream Spar ("Spar1.txt");
+	std::fstream Spar ("Spar1.txt", std::ios::in | std::ios::app);
 	if (Spar.is_open()){
-		Spar << Name << std::endl << Titel << std::endl << Str << std::endl << Dex << std::endl << Con << std::endl << Int << std::endl;
+		Spar << "{" << std::endl << Name << std::endl << Titel << std::endl << Str << std::endl << Dex << std::endl << Con << std::endl << Int << std::endl;
 		Spar.close();
 	}
 }
 //Ladda den sparade gubben
+//---------------------------------------------------------------------------------------------------------------------------
 void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow, tgui::EditBox::Ptr TitelBox, tgui::EditBox::Ptr NameBox){
-
+	sf::RenderWindow window3(sf::VideoMode(600, 600), "Loadwindow");
+	tgui::Gui gui3{window3};
+//editbox och var
+	tgui::EditBox::Ptr Load = tgui::EditBox::create();
+		gui3.add(Load);
+		Load->setPosition(10, 10);
+		Load->setSize(100, 50);
+		Load->setTextSize(25);
 	int a = 0;
 	std::string Gubbe[6];
 	std::ifstream Ladd ("Spar1.txt");
-	if (Ladd.is_open()){
-		for(int a=0; a<6; a++){
-			getline(Ladd, Gubbe[a]);
+	std::string x;
+	std::string line;
+	std::string test;
+//Loop
+	while (window3.isOpen())
+	{
+		sf::Event event3;
+		while (window3.pollEvent(event3))
+		{
+			if (event3.key.code == sf::Keyboard::Return)
+				x = Load->getText();
+				while (Ladd.is_open()){
+					getline(Ladd, line);
+					if (line == "{"){
+						getline(Ladd, test);
+						if (test == x){
+							for(int a=0; a<6; a++){
+								getline(Ladd, Gubbe[a]);
+							}
+						}
+					}					
+					NameBox->setText(Gubbe[0]);
+					TitelBox->setText(Gubbe[1]);
+					Strshow->setText(Gubbe[2]);
+					Dexshow->setText(Gubbe[3]);
+					Conshow->setText(Gubbe[4]);
+					Intshow->setText(Gubbe[5]);
+				}
+				Ladd.close();
+			if (event3.type == sf::Event::Closed)
+				window3.close();		
+			gui3.handleEvent(event3);
 		}
-	Ladd.close();
+	window3.clear();
+	gui3.draw();
+	window3.display();	
 	}
-	NameBox->setText(Gubbe[0]);
-	TitelBox->setText(Gubbe[1]);
-	Strshow->setText(Gubbe[2]);
-	Dexshow->setText(Gubbe[3]);
-	Conshow->setText(Gubbe[4]);
-	Intshow->setText(Gubbe[5]);
 
 }
+
+//				if (Ladd.is_open()) {
+//					while(getline(Ladd,x )){
+//						if (x.find("{") != std::string::npos){
+//							if (x == Name){
+//								for(int a=0; a<6; a++){
+//									getline(Ladd, Gubbe[a]);
+//								}
+//							}
+//						}
+//					}
+//
+//				Name = Load->getText();
+//				if (Ladd.is_open()){
+//					while (getline (Ladd,Name)){
+//						for(int a=0; a<6; a++){
+//							getline(Ladd, Gubbe[a]);
+//						}
+//					}
+
+
 //Statwindow
+//---------------------------------------------------------------------------------------------------------------------------
 void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow){
 	sf::RenderWindow window2(sf::VideoMode(350, 500), "Statwindow");
 	tgui::Gui gui2{window2};
@@ -149,6 +206,7 @@ void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Ed
 	}		
 }
 //main
+//---------------------------------------------------------------------------------------------------------------------------
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(w_width, w_height), "DND CharCreationTM");
