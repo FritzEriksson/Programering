@@ -34,14 +34,25 @@ void sparning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 //Ladda den sparade gubben
 //---------------------------------------------------------------------------------------------------------------------------
 void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow, tgui::EditBox::Ptr TitelBox, tgui::EditBox::Ptr NameBox){
-	sf::RenderWindow window3(sf::VideoMode(600, 600), "Loadwindow");
+	sf::RenderWindow window3(sf::VideoMode(510, 220), "Loadwindow");
 	tgui::Gui gui3{window3};
+	sf::Font font;
+	if (!font.loadFromFile("PiratesBay.ttf")){
+		std::cout << "font not found" << std::endl;
+	}
 //editbox och var
 	tgui::EditBox::Ptr Load = tgui::EditBox::create();
 		gui3.add(Load);
-		Load->setPosition(10, 10);
-		Load->setSize(100, 50);
-		Load->setTextSize(25);
+		Load->setPosition(50, 100);
+		Load->setSize(300, 50);
+		Load->setTextSize(40);
+	sf::Text Tutori;
+		Tutori.setFont(font);
+		Tutori.setString("Type the name of the Character\n you wish to load");
+		Tutori.setCharacterSize(35);
+		Tutori.setFillColor(sf::Color(255, 255, 255));
+		Tutori.setPosition(sf::Vector2f(7.f, 7.f));
+		Tutori.setStyle(sf::Text::Bold);
 	int a = 0;
 	std::string Gubbe[5];
 	std::ifstream Ladd ("Spar1.txt");
@@ -55,56 +66,44 @@ void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 		while (window3.pollEvent(event3))
 		{
 			if (event3.key.code == sf::Keyboard::Return)
+			{
 				x = Load->getText();
-				while (Ladd.is_open()){
+				while (Ladd.is_open())
+				{
 					getline(Ladd, line);
-					if (line == "{"){
+					if (line == "{")
+					{
 						getline(Ladd, test);
-						if (test == x){
-							for(int a=0; a<5; a++){
+						if (test == x)
+						{
+							for(int a=0; a<5; a++)
+							{
 								getline(Ladd, Gubbe[a]);
 							}
+							TitelBox->setText(x);
+							NameBox->setText(Gubbe[0]);
+							Strshow->setText(Gubbe[1]);
+							Dexshow->setText(Gubbe[2]);
+							Conshow->setText(Gubbe[3]);
+							Intshow->setText(Gubbe[4]);
+							Ladd.close();
+							window3.close();
 						}
+						else
+							test = "";
 					}					
-					NameBox->setText(x);
-					TitelBox->setText(Gubbe[0]);
-					Strshow->setText(Gubbe[1]);
-					Dexshow->setText(Gubbe[2]);
-					Conshow->setText(Gubbe[3]);
-					Intshow->setText(Gubbe[4]);
 				}
-				Ladd.close();
+			}
 			if (event3.type == sf::Event::Closed)
 				window3.close();		
 			gui3.handleEvent(event3);
 		}
 	window3.clear();
 	gui3.draw();
+	window3.draw(Tutori);
 	window3.display();	
 	}
-
 }
-
-//				if (Ladd.is_open()) {
-//					while(getline(Ladd,x )){
-//						if (x.find("{") != std::string::npos){
-//							if (x == Name){
-//								for(int a=0; a<6; a++){
-//									getline(Ladd, Gubbe[a]);
-//								}
-//							}
-//						}
-//					}
-//
-//				Name = Load->getText();
-//				if (Ladd.is_open()){
-//					while (getline (Ladd,Name)){
-//						for(int a=0; a<6; a++){
-//							getline(Ladd, Gubbe[a]);
-//						}
-//					}
-
-
 //Statwindow
 //---------------------------------------------------------------------------------------------------------------------------
 void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow){
