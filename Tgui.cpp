@@ -364,11 +364,19 @@ sf::Text Avatar;
 					Namedone.setString(NameBox->getText());
 				if (event.key.code == sf::Keyboard::Return)
 					Titeldone.setString(TitelBox->getText());
-				if (event.key.code == sf::Keyboard::C)
+				if (event.key.code == sf::Keyboard::Right)
 				{	
 					a++;
 					if (a == 3){
 						a = 0;
+					}
+					Gubbe.setTexture(revolver[a]);
+				}
+				if (event.key.code == sf::Keyboard::Left)
+				{	
+					a--;
+					if (a == -1){
+						a = 2;
 					}
 					Gubbe.setTexture(revolver[a]);
 				}
