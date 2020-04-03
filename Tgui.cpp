@@ -7,9 +7,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-const int w_width = 600;
-const int w_height= 700;
-
 //Randomizer för Knappar
 //---------------------------------------------------------------------------------------------------------------------------
 void signalHandler(tgui::EditBox::Ptr editbox){	
@@ -33,13 +30,12 @@ void sparning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 }
 //Ladda den sparade gubben
 //---------------------------------------------------------------------------------------------------------------------------
-void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow, tgui::EditBox::Ptr TitelBox, tgui::EditBox::Ptr NameBox){
+void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow, tgui::EditBox::Ptr TitelBox, tgui::EditBox::Ptr NameBox)
+	{
 	sf::RenderWindow window3(sf::VideoMode(510, 220), "Loadwindow");
 	tgui::Gui gui3{window3};
 	sf::Font font;
-	if (!font.loadFromFile("PiratesBay.ttf")){
-		std::cout << "font not found" << std::endl;
-	}
+		font.loadFromFile("PiratesBay.ttf");
 //editbox och var
 	tgui::EditBox::Ptr Load = tgui::EditBox::create();
 		gui3.add(Load);
@@ -65,33 +61,36 @@ void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 		sf::Event event3;
 		while (window3.pollEvent(event3))
 		{
-			if (event3.key.code == sf::Keyboard::Return)
+			if (event3.type == sf::Event::KeyPressed)
 			{
-				x = Load->getText();
-				while (Ladd.is_open())
+				if (event3.key.code == sf::Keyboard::Return)
 				{
-					getline(Ladd, line);
-					if (line == "{")
+					x = Load->getText();
+					while (Ladd.is_open())
 					{
-						getline(Ladd, test);
-						if (test == x)
+						getline(Ladd, line);
+						if (line == "{")
 						{
-							for(int a=0; a<5; a++)
+							getline(Ladd, test);
+							if (test == x)
 							{
-								getline(Ladd, Gubbe[a]);
+								for(int a=0; a<5; a++)
+								{
+									getline(Ladd, Gubbe[a]);
+								}
+								TitelBox->setText(x);
+								NameBox->setText(Gubbe[0]);
+								Strshow->setText(Gubbe[1]);
+								Dexshow->setText(Gubbe[2]);
+								Conshow->setText(Gubbe[3]);
+								Intshow->setText(Gubbe[4]);
+								Ladd.close();
+								window3.close();
 							}
-							TitelBox->setText(x);
-							NameBox->setText(Gubbe[0]);
-							Strshow->setText(Gubbe[1]);
-							Dexshow->setText(Gubbe[2]);
-							Conshow->setText(Gubbe[3]);
-							Intshow->setText(Gubbe[4]);
-							Ladd.close();
-							window3.close();
-						}
-						else
-							test = "";
-					}					
+							else
+								test = "";
+						}					
+					}
 				}
 			}
 			if (event3.type == sf::Event::Closed)
@@ -106,13 +105,12 @@ void laddning(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Edit
 }
 //Statwindow
 //---------------------------------------------------------------------------------------------------------------------------
-void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow){
+void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::EditBox::Ptr Conshow, tgui::EditBox::Ptr Intshow)
+	{
 	sf::RenderWindow window2(sf::VideoMode(350, 500), "Statwindow");
 	tgui::Gui gui2{window2};
 	sf::Font font;
-	if (!font.loadFromFile("PiratesBay.ttf")){
-		std::cout << "font not found" << std::endl;
-	}
+		font.loadFromFile("PiratesBay.ttf");
 //Matte och omvandling	
 	std::string mstr = Strshow->getText();
 	std::string mdex = Dexshow->getText();
@@ -208,19 +206,19 @@ void statwindow(tgui::EditBox::Ptr Strshow, tgui::EditBox::Ptr Dexshow, tgui::Ed
 //---------------------------------------------------------------------------------------------------------------------------
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(w_width, w_height), "DND CharCreationTM");
+	sf::RenderWindow window(sf::VideoMode(600, 700), "DND CharCreationTM");
 	tgui::Gui gui{window};
 	srand (time(NULL));
 //Laddning av font och texturer
 	sf::Font font;
-	if (!font.loadFromFile("PiratesBay.ttf")){
-		std::cout << "font not found" << std::endl;
-	}
+		font.loadFromFile("PiratesBay.ttf");
 	sf::Texture texture;
-	if (!texture.loadFromFile("Gubbe.jpg"))
-	{
-	    std::cout << "texture not found" << std::endl;
-	}
+		texture.loadFromFile("Mage.png");
+	sf::Texture Warrior;
+		Warrior.loadFromFile("Warrior.png");
+	sf::Texture Archer;
+		Archer.loadFromFile("Archer.png");
+	sf::Texture revolver[3] = {texture, Warrior, Archer};
 // Knappar, Editboxar, text och annan GUI (Förstaskärm) 
 	tgui::Button::Ptr Strknapp = tgui::Button::create();
 		gui.add(Strknapp);
@@ -329,6 +327,13 @@ int main()
 		Rand.setFillColor(sf::Color(255, 255, 255));
 		Rand.setPosition(sf::Vector2f(18.f, 510.f));
 		Rand.setStyle(sf::Text::Bold);
+sf::Text Avatar;
+		Avatar.setFont(font);
+		Avatar.setString("Press C to change your avatar");
+		Avatar.setCharacterSize(20);
+		Avatar.setFillColor(sf::Color(255, 255, 255));
+		Avatar.setPosition(sf::Vector2f(110.f, 200.f));
+		Avatar.setStyle(sf::Text::Bold);
 //Signaler
 	Strknapp->connect("pressed", signalHandler, std::ref(Strshow));
 	Dexknapp->connect("pressed", signalHandler, std::ref(Dexshow));
@@ -342,22 +347,34 @@ int main()
 	Sparknapp->connect("pressed", sparning, std::ref(Strshow), std::ref(Dexshow), std::ref(Conshow), std::ref(Intshow), std::ref(NameBox), std::ref(TitelBox));
 	Laddknapp->connect("pressed", laddning, std::ref(Strshow), std::ref(Dexshow), std::ref(Conshow), std::ref(Intshow), std::ref(NameBox), std::ref(TitelBox));
 //Sprite
+	int a = 0;
 	sf::Sprite Gubbe;
-		Gubbe.setTexture(texture);
+		Gubbe.setTexture(revolver[a]);
 		Gubbe.setPosition(sf::Vector2f(170.f, 200.f)); 
-		Gubbe.setScale(sf::Vector2f(0.5f, 0.5f)); 
+		Gubbe.setScale(sf::Vector2f(0.5f, 0.5f));
 // Loop Main
 	while (window.isOpen())
 	{
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
-			if (event.key.code == sf::Keyboard::Return)		
-				Namedone.setString(NameBox->getText());
-			if (event.key.code == sf::Keyboard::Return)
-				Titeldone.setString(TitelBox->getText());
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Return)		
+					Namedone.setString(NameBox->getText());
+				if (event.key.code == sf::Keyboard::Return)
+					Titeldone.setString(TitelBox->getText());
+				if (event.key.code == sf::Keyboard::C)
+				{	
+					a++;
+					if (a == 3){
+						a = 0;
+					}
+					Gubbe.setTexture(revolver[a]);
+				}
+			}
 			if (event.type == sf::Event::Closed)
-				window.close();		
+				window.close();
 			gui.handleEvent(event);
 		}
 	window.clear();
@@ -371,6 +388,7 @@ int main()
 	window.draw(Nameplate);
 	window.draw(Rand);
 	window.draw(Gubbe);
+	window.draw(Avatar);
 	window.display();
 	}
 }
