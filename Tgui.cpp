@@ -327,7 +327,7 @@ int main()
 		Rand.setFillColor(sf::Color(255, 255, 255));
 		Rand.setPosition(sf::Vector2f(18.f, 510.f));
 		Rand.setStyle(sf::Text::Bold);
-sf::Text Avatar;
+	sf::Text Avatar;
 		Avatar.setFont(font);
 		Avatar.setString("Press C to change your avatar");
 		Avatar.setCharacterSize(20);
