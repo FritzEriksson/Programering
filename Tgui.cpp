@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 //Randomizer för Knappar
 //---------------------------------------------------------------------------------------------------------------------------
 void signalHandler(tgui::EditBox::Ptr editbox){	
