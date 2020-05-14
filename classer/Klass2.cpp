@@ -53,6 +53,7 @@ bool Brawler::checkHP(){
   else
     return (false);
 }
+//Check mana and remove
 void Brawler::Manafunc(Brawler &Foe, int x, int y){
   if(Mana >= x){
     Mana = Mana - x;
@@ -71,7 +72,7 @@ void Brawler::setname(){
   cout << "And on our left: The conterster" << name << endl;
 }
 
-//check for hp and remove
+//remove hp
 void Brawler::gethit(Brawler &Foe, int y){
   HP = HP - y;
 }
