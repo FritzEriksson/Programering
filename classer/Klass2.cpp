@@ -5,16 +5,17 @@ using namespace std;
 class Brawler{
   public:
     void setname();
-    void gethit(dmg);
+    void gethit(int dmg);
     bool checkHP();
     class Spells{
       public:
-        void castspell(Brawler &Foe);
+        void castspell(Brawler &Foe, Brawler &attacker);
         int Manacost;
         int dmg;
 	string name;
       private:
     }Spell[4];
+    void gethit(dmg);
   private:
     string name;
     int HP;
@@ -34,13 +35,14 @@ int rollenemyattack(){
   return number - 1;
 }
 //check for hit and send manacost and dmg
-void Brawler::Spells::castspell(Brawler &Foe){
+void Brawler::Spells::castspell(Brawler &Foe,Brawler &attacker){
   if(rollhit() == true){
-    if(Mana >= Manacost){
+    int x = Manacost;
+    attacker.Manafunc(x);
+/*    if(Mana >= Manacost){
       Mana = Mana - Manacost;
-      Foe.gethit(dmg);
-      cout << "I will use " << name << endl;      
-    }
+*/  Foe.gethit(dmg);
+    cout << "I will use " << name << endl;      
   else
     cout << "The spell missed..." << endl;
   }
@@ -52,7 +54,12 @@ bool Brawler::checkHP(){
   else
     return (false);
 }
-
+void Brawler::Manafunc(x){
+  if(Mana >= x){
+     Mana = Mana - x;
+  Mana = Mana - Manacost;
+  }
+}
 //into for name
 void Brawler::setname(){
   string fake;
@@ -64,7 +71,7 @@ void Brawler::setname(){
 }
 
 //check for hp and remove
-void Brawler::gethit(dmg){
+void Brawler::gethit(int dmg){
   Foe.HP = Foe.HP - dmg;
 }
 
@@ -152,12 +159,12 @@ int main(){
         cout << Player::Spell[a].name << ": " << a << endl;
       } 
       cin >> x;
-      Player.Spell[x].castspell(Enemy);
+      Player.Spell[x].castspell(Enemy, Player);
       attacker.push_back(Player);
       attacker.pop_front()
     else
       rollenemyattack(x);
-      Enemy.Spell[x].castspell(Player);
+      Enemy.Spell[x].castspell(Player, Enemy);
       attacker.push_back(Enemy);
       attacker.pop_front()
   }
