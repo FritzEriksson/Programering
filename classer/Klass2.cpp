@@ -1,12 +1,14 @@
 #include <iostream>
+#include <list>
 
 using namespace std;
 //Class
 class Brawler{
   public:
     void setname();
-    void gethit(int dmg);
+    void gethit(Brawler &Foe,int y);
     bool checkHP();
+    void Manafunc(Brawler &Foe, int x, int y);
     class Spells{
       public:
         void castspell(Brawler &Foe, Brawler &attacker);
@@ -15,7 +17,6 @@ class Brawler{
 	string name;
       private:
     }Spell[4];
-    void gethit(dmg);
   private:
     string name;
     int HP;
@@ -30,22 +31,20 @@ bool rollhit(){
     return (false);	
 }
 //roll for spell (enemy)
-int rollenemyattack(){
-  auto number = (rand() % 4) + 1;
-  return number - 1;
+int rollenemyattack(int z){
+  z = (rand() % 4) + 1;
+  return z = z - 1;
 }
 //check for hit and send manacost and dmg
 void Brawler::Spells::castspell(Brawler &Foe,Brawler &attacker){
   if(rollhit() == true){
     int x = Manacost;
-    attacker.Manafunc(x);
-/*    if(Mana >= Manacost){
-      Mana = Mana - Manacost;
-*/  Foe.gethit(dmg);
-    cout << "I will use " << name << endl;      
+    int y = dmg;
+    attacker.Manafunc(Foe, x, y);
+    cout << "I will use " << name << endl;
+  }      
   else
     cout << "The spell missed..." << endl;
-  }
 }
 //to check if player or enemy is dead
 bool Brawler::checkHP(){
@@ -54,11 +53,13 @@ bool Brawler::checkHP(){
   else
     return (false);
 }
-void Brawler::Manafunc(x){
+void Brawler::Manafunc(Brawler &Foe, int x, int y){
   if(Mana >= x){
-     Mana = Mana - x;
-  Mana = Mana - Manacost;
+    Mana = Mana - x;
+    Foe.gethit(Foe, y);
   }
+  else
+    cout << "We need more mana for that!" << endl;
 }
 //into for name
 void Brawler::setname(){
@@ -71,8 +72,8 @@ void Brawler::setname(){
 }
 
 //check for hp and remove
-void Brawler::gethit(int dmg){
-  Foe.HP = Foe.HP - dmg;
+void Brawler::gethit(Brawler &Foe, int y){
+  HP = HP - y;
 }
 
 int main(){
@@ -153,20 +154,21 @@ int main(){
 //int lvl för att fixa fler bossar
   //Boss 1
   while (Player.checkHP() == true || Enemy.checkHP() == true){
-    int x;
-    if(attacker.front() == Player)
+    int z;
+    if(attacker.front() == Player){
       for(int a=0;a<4; a++){ 
-        cout << Player::Spell[a].name << ": " << a << endl;
+        cout << Player.Spell[a].name << ": " << a << endl;
       } 
-      cin >> x;
-      Player.Spell[x].castspell(Enemy, Player);
+      cin >> z;
+      Player.Spell[z].castspell(Enemy, Player);
       attacker.push_back(Player);
-      attacker.pop_front()
+      attacker.pop_front();
+    }
     else
-      rollenemyattack(x);
-      Enemy.Spell[x].castspell(Player, Enemy);
+      rollenemyattack(z);
+      Enemy.Spell[z].castspell(Player, Enemy);
       attacker.push_back(Enemy);
-      attacker.pop_front()
+      attacker.pop_front();
   }
   //Boss2 etc
 }
