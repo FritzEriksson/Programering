@@ -1,14 +1,21 @@
 #include <iostream>
 #include <list>
+#include <string.h>
+#include <iomanip>
 
 using namespace std;
 //Class
 class Brawler{
   public:
+    Brawler(string name_=""){
+      name = name_;
+    }
     void setname();
     void gethit(Brawler &Foe,int y);
     bool checkHP();
     void Manafunc(Brawler &Foe, int x, int y);
+    void sethp(Brawler &Foe);
+    void Showhpmana(Brawler &Foe);
     class Spells{
       public:
         void castspell(Brawler &Foe, Brawler &attacker);
@@ -17,11 +24,17 @@ class Brawler{
 	string name;
       private:
     }Spell[4];
+    friend bool operator==(class Brawler& lhs, class Brawler& rhs);
   private:
     string name;
     int HP;
     int Mana;
 };
+//make the list work
+bool operator==(class Brawler& lhs, class Brawler& rhs){
+  return lhs.name == rhs.name;
+}
+
 //roll for hit
 bool rollhit(){
   auto number = (rand() % 20) + 1;
@@ -41,14 +54,14 @@ void Brawler::Spells::castspell(Brawler &Foe,Brawler &attacker){
     int x = Manacost;
     int y = dmg;
     attacker.Manafunc(Foe, x, y);
-    cout << "I will use " << name << endl;
+    cout << "Announcer: What a gracefull move, the champion is using his narrow timewindow to cast: " << name << endl;
   }      
   else
-    cout << "The spell missed..." << endl;
+    cout << "Announcer: The spell missed.. what a disaster.." << endl;
 }
 //to check if player or enemy is dead
 bool Brawler::checkHP(){
-  if(HP < 0)
+  if(HP > 0)
     return (true);
   else
     return (false);
@@ -60,23 +73,42 @@ void Brawler::Manafunc(Brawler &Foe, int x, int y){
     Foe.gethit(Foe, y);
   }
   else
-    cout << "We need more mana for that!" << endl;
+    cout << "I need more mana!" << endl;
 }
 //into for name
 void Brawler::setname(){
   string fake;
-  name = "Dunce";
-  cout << "..what's your name" << endl;
+  
+  cout << "Announcer: ..what's your name" << endl;
   cin >> fake;
-  cout << fake << "? What kind of a shit name is that?? Im gonna call you: " << name << endl;
-  cout << "And on our left: The conterster" << name << endl;
+  cout << "Announcer: Ok? What kind of a shit name is that?? Im gonna call you: " << name << endl;
+  cout << "Announcer: And on our left: The conterster" << name << endl;
 }
 
 //remove hp
 void Brawler::gethit(Brawler &Foe, int y){
   HP = HP - y;
 }
-
+void Brawler::sethp(Brawler &Foe){
+  HP = 100;
+  Foe.HP = 100;
+  Mana = 100;
+  Foe.Mana = 100;
+}
+void Brawler::Showhpmana(Brawler &Foe){
+  cout << setfill('=') << setw(26) << " \n";
+  cout << setfill(' ');
+  cout << "Player Stats" << endl;
+  cout << "HP: " << HP << endl;
+  cout << "Mana: " << Mana << endl;
+  cout << setfill('=') << setw(13) << " \n";
+  cout << setfill(' ');
+  cout << "Enemy Stats" << endl;
+  cout << "HP: " << Foe.HP << endl;
+  cout << "Mana: " << Foe.Mana << endl;
+  cout << setfill('=') << setw(13) << " \n";
+  cout << setfill(' ');
+}
 int main(){
 //Spellbook
   Brawler::Spells Punch;
@@ -120,9 +152,10 @@ int main(){
     Killonsight.dmg  = 35;
     Killonsight.name = "Kill on sight";
 //set Brawler spells
-  Brawler Mage;
-  Brawler Warrior;
-  Brawler Enemy;
+  Brawler Mage("Mage");
+  Brawler Warrior("Warrior");
+  Brawler Enemy("Enemy");
+  Brawler Player;
   Mage.Spell[0] = Punch;
   Mage.Spell[1] = Pickacard;
   Mage.Spell[2] = Coinflip;
@@ -145,31 +178,40 @@ int main(){
   if (input == 2)
     Brawler Player = Warrior;
   if (input < 1 || 2 < input)
-    cout << "You have to choices.. just pick one..." << endl;   
+    cout << "You have to choices.. just pick one..." << endl;
+       
   list<Brawler> attacker = {Player, Enemy};
   
 
-  cout << "Welcome to the Brawler's Leauge! Two brave champions has made it to the finals! On the left: Our reigning champion KALGOOR THE BEAKER OF WORLDS!!!" << endl;
+  cout << "Announcer: Welcome to the Brawler's Leauge! Two brave champions has made it to the finals! On the left: Our reigning champion KALGOOR THE BEAKER OF WORLDS!!!" << endl;
   Player.setname();
-  cout << "Let the game begin!" << endl;
+  cout << "Announcer: Let the game begin!" << endl;
+  cout << setfill('=') << setw(26) << " \n";
+  cout << setfill(' ');
 //int lvl för att fixa fler bossar
   //Boss 1
+  Player.sethp(Enemy);
   while (Player.checkHP() == true || Enemy.checkHP() == true){
     int z;
     if(attacker.front() == Player){
+      cout << "Announcer: Dunce is on the move.." << endl;
+      cout << "You know this is your time to strike, your options are limited and you narrowed it down to four options." << endl << endl;
       for(int a=0;a<4; a++){ 
-        cout << Player.Spell[a].name << ": " << a << endl;
+        cout << a << ": " << Player.Spell[a].name << endl;
       } 
       cin >> z;
       Player.Spell[z].castspell(Enemy, Player);
       attacker.push_back(Player);
       attacker.pop_front();
+      Player.Showhpmana(Enemy);
     }
     else
+      cout << "Announcer: Kalgoor is on the move.." << endl;
       rollenemyattack(z);
       Enemy.Spell[z].castspell(Player, Enemy);
       attacker.push_back(Enemy);
       attacker.pop_front();
+      Player.Showhpmana(Enemy);
   }
   //Boss2 etc
 }
